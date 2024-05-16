@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
+import { TextMessageBoxEvet } from '@components/index';
 import {
   orthographyUseCase,
   prosConsStreamUseCase,
   prosConsUseCase,
+  translateUseCase,
 } from '@use-cases/index';
 import { from } from 'rxjs';
 
@@ -16,5 +18,8 @@ export class OpenAIService {
   }
   prosConsStreamDiscusser(prompt: string, abortSignal: AbortSignal) {
     return prosConsStreamUseCase(prompt, abortSignal);
+  }
+  translate(prompt: { prompt: string; lang: string; } ) {
+    return from(translateUseCase(prompt));
   }
 }

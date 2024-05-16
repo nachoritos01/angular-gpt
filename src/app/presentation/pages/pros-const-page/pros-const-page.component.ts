@@ -37,7 +37,6 @@ export default class ProsConstPageComponent {
   public openIaService = inject(OpenAIService);
 
   handleMessage(prompt: string) {
-    console.log('prompt', prompt);
     this.isLoading.update(() => true);
 
     this.messages.update((prev) => [
