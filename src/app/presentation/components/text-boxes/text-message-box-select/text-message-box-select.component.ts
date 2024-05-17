@@ -8,7 +8,7 @@ import {
   Output,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-interface Option{
+export interface Option{
   id: string;
   text: string;
 }
