@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { TextMessageBoxEvet } from '@components/index';
 import {
+  audioToTextUseCase,
   orthographyUseCase,
   prosConsStreamUseCase,
   prosConsUseCase,
@@ -26,5 +27,8 @@ export class OpenAIService {
 
   convertTextToAudio(prompt: string, voice: string) {
     return from(textToAudioUseCase(prompt, voice));
+  }
+  convertAudioToText(audioFile: File, prompt?: string) {
+    return from(audioToTextUseCase(audioFile, prompt));
   }
 }
