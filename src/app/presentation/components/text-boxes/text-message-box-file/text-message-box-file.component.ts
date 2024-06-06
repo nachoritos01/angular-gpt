@@ -34,18 +34,12 @@ export class TextMessageBoxFileComponent {
   public handleSubmit() {
     if (this.form.invalid) return;
     const { prompt, file } = this.form.value;
-    console.log(file, prompt);
-
     this.onMessage.emit({ file: file!, prompt });
     this.form.reset();
   }
 
   handleSelectedFile(event: any) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files.item(0);
-      console.log(file);
-      this.form.controls.file.setValue(file);
-      console.log(this.form.value);
-    }
+    const file = event.target.files.item(0);
+    this.form.controls.file.setValue(file);
   }
 }
