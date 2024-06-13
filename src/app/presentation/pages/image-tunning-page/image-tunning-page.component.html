@@ -6,7 +6,7 @@
     alt="Imagen a editar"
     class="border rounded-xl w-36 object-contain"
   />
-  <button (click)="genereteVariation()" class="btn-primary mt-2">
+  <button (click)="generateVariation()" class="btn-primary mt-2">
     Generar variacion
   </button>
 </div>
@@ -19,7 +19,7 @@
       <app-gpt-message-editable-image
         [text]="message.text"
         [imageInfo]="message.imageInfo!"
-        (onSelectedImage)="handleSelectedImage($event, message.imageInfo!.url)"
+        (onSelectedImage)="handleImageChange($event, message.imageInfo!.url)"
       />
       } @else {
       <app-my-message [text]="message.text"></app-my-message>} }
