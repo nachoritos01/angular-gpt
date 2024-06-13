@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { TextMessageBoxEvet } from '@components/index';
 import {
   audioToTextUseCase,
+  ImageGenerationUseCase,
+  ImageVariationUseCase,
   orthographyUseCase,
   prosConsStreamUseCase,
   prosConsUseCase,
@@ -30,5 +32,11 @@ export class OpenAIService {
   }
   convertAudioToText(audioFile: File, prompt?: string) {
     return from(audioToTextUseCase(audioFile, prompt));
+  }
+  imageGeneration(prompt: string, originalImage?: string, maskImage?: string) {
+    return from(ImageGenerationUseCase(prompt, originalImage, maskImage));
+  }
+  imageGenerationVariation(originalImage: string) {
+    return from(ImageVariationUseCase(originalImage));
   }
 }
