@@ -3,8 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  Input,
-  Signal,
   signal,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -24,64 +22,69 @@ import { OpenAIService } from 'app/presentation/services/openia.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    GptMessageEditableImageComponent,
+    ChatMessageComponent,
     MyMessageComponent,
     TypingLoaderComponent,
     TextMessageBoxComponent,
+    GptMessageEditableImageComponent,
   ],
   templateUrl: './image-tunning-page.component.html',
   styleUrl: './image-tunning-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ImageTunningPageComponent {
-  @Input({ required: true }) text!: string;
-  public messages = signal<Message[]>([
-    {
-      text: 'Hello, I am an AI that can help you with your images.',
-      isGpt: true,
-      imageInfo: {
-        url: 'http://localhost:3000/gpt/image-generation/1718282001088',
-        alt: 'dumy image',
-      },
-    },
-  ]);
+  public messages = signal<Message[]>([]);
   public isLoading = signal(false);
-  public openIaService = inject(OpenAIService);
+  public openAiService = inject(OpenAIService);
+
   public originalImage = signal<string | undefined>(undefined);
   public maksImage = signal<string | undefined>(undefined);
 
   handleMessage(prompt: string) {
     this.isLoading.set(true);
-    this.messages.update((prev) => [...prev, { text: prompt, isGpt: false }]);
+    this.messages.update((prev) => [...prev, { isGpt: false, text: prompt }]);
 
-    this.openIaService
+    this.openAiService
       .imageGeneration(prompt, this.originalImage(), this.maksImage())
-      .subscribe((response) => {
+      .subscribe((resp) => {
         this.isLoading.set(false);
+        if (!resp) return;
+
         this.messages.update((prev) => [
           ...prev,
-          { text: response?.alt!, isGpt: true, imageInfo: response! },
+          {
+            isGpt: true,
+            text: resp.alt,
+            imageInfo: resp,
+          },
         ]);
       });
   }
 
-  genereteVariation() {
-    this.isLoading.set(true);
-    this.openIaService
-      .imageGenerationVariation(this.originalImage()!)
-      .subscribe((response) => {
-        this.isLoading.set(false);
-        if (!response) return;
-        this.messages.update((prev) => [
-          ...prev,
-          { text: response?.alt!, isGpt: true, imageInfo: response! },
-        ]);
-      });
-  }
-
-  handleSelectedImage(newImage: string, originalImage: string) {
-    this.originalImage.set(newImage);
-    //Todo trabajar con la mascara
+  handleImageChange(newImage: string, originalImage: string) {
+    this.originalImage.set(originalImage);
     this.maksImage.set(newImage);
+  }
+
+  generateVariation() {
+    if (!this.originalImage()) return;
+
+    this.isLoading.set(true);
+
+    this.openAiService
+      .imageGenerationVariation(this.originalImage()!)
+      .subscribe((resp) => {
+        this.isLoading.set(false);
+        if (!resp) return;
+
+        this.messages.update((prev) => [
+          ...prev,
+          {
+            isGpt: true,
+            text: resp.alt,
+            imageInfo: resp,
+          },
+        ]);
+      });
   }
 }
