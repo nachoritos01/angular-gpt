@@ -2,15 +2,17 @@ import { Injectable } from '@angular/core';
 import { TextMessageBoxEvet } from '@components/index';
 import {
   audioToTextUseCase,
+  createThreadUseCase,
   ImageGenerationUseCase,
   ImageVariationUseCase,
   orthographyUseCase,
+  postQuestionUseCase,
   prosConsStreamUseCase,
   prosConsUseCase,
   textToAudioUseCase,
   translateUseCase,
 } from '@use-cases/index';
-import { from } from 'rxjs';
+import { from, Observable, of, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class OpenAIService {
@@ -38,5 +40,22 @@ export class OpenAIService {
   }
   imageGenerationVariation(originalImage: string) {
     return from(ImageVariationUseCase(originalImage));
+  }
+
+  createThread(): Observable<string> {
+    const thread = localStorage.getItem('thread');
+    if (thread !== undefined && thread !== null && thread !== 'undefined') {
+      return of(thread);
+    }
+
+    return from(createThreadUseCase()).pipe(
+      tap((newThread) => {
+        localStorage.setItem('thread', newThread);
+      })
+    );
+  }
+
+  postQuestion(question: string, threadId: string) {
+    return from(postQuestionUseCase(question, threadId));
   }
 }
